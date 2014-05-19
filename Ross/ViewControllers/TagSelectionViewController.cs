@@ -60,7 +60,7 @@ namespace Toggl.Ross.ViewControllers
                 model.Tags.Add (tag);
             }
 
-            NavigationController.PopViewControllerAnimated (true);
+            this.PopViewController (true);
         }
 
         private class Source : PlainDataViewSource<TagModel>

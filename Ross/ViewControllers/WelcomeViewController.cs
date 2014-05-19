@@ -80,7 +80,7 @@ namespace Toggl.Ross.ViewControllers
         {
             base.ViewWillAppear (animated);
 
-            var navController = NavigationController;
+            var navController = this.GetStackController ();
             if (navController != null) {
                 navController.SetNavigationBarHidden (true, animated);
             }
@@ -90,7 +90,7 @@ namespace Toggl.Ross.ViewControllers
         {
             base.ViewWillDisappear (animated);
 
-            var navController = NavigationController;
+            var navController = this.GetStackController ();
             if (navController != null) {
                 navController.SetNavigationBarHidden (false, animated);
             }

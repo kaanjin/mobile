@@ -98,10 +98,10 @@ namespace Toggl.Ross.ViewControllers
             var controller = new ClientSelectionViewController (model.Workspace) {
                 ClientSelected = (client) => {
                     model.Client = client;
-                    NavigationController.PopToViewController (this, true);
+                    this.PopToViewController (this, true);
                 }
             };
-            NavigationController.PushViewController (controller, true);
+            this.PushViewController (controller, true);
         }
 
         private void OnNavigationBarAddClicked (object sender, EventArgs e)
@@ -119,7 +119,7 @@ namespace Toggl.Ross.ViewControllers
             if (cb != null) {
                 cb (model);
             } else {
-                NavigationController.PopViewControllerAnimated (true);
+                this.PopViewController (true);
             }
         }
 

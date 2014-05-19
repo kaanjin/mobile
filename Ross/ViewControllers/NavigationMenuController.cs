@@ -34,7 +34,7 @@ namespace Toggl.Ross.ViewControllers
             if (containerView != null)
                 return;
 
-            var navController = controller.NavigationController;
+            var navController = controller.GetStackController ();
             if (navController == null)
                 return;
 
@@ -126,11 +126,11 @@ namespace Toggl.Ross.ViewControllers
         private void OnMenuButtonTouchUpInside (object sender, EventArgs e)
         {
             if (sender == recentButton && !(controller is RecentViewController)) {
-                var navController = controller.NavigationController;
+                var navController = controller.GetStackController ();
                 navController.SetViewControllers (new[] { new RecentViewController () }, true);
                 // TODO: Store user selection?
             } else if (sender == logButton && !(controller is LogViewController)) {
-                var navController = controller.NavigationController;
+                var navController = controller.GetStackController ();
                 navController.SetViewControllers (new[] { new LogViewController () }, true);
                 // TODO: Store user selection?
             } else if (sender == settingsButton) {
@@ -186,7 +186,7 @@ namespace Toggl.Ross.ViewControllers
 
                 // Make sure that the containerView has been added the the view hiearchy
                 if (containerView.Superview == null) {
-                    var navController = controller.NavigationController;
+                    var navController = controller.GetStackController ();
                     if (navController != null) {
                         navController.View.AddSubview (containerView);
                     }

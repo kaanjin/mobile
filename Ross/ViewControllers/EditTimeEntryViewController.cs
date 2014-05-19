@@ -301,7 +301,7 @@ namespace Toggl.Ross.ViewControllers
         private void OnProjectButtonTouchUpInside (object sender, EventArgs e)
         {
             var controller = new ProjectSelectionViewController (model);
-            NavigationController.PushViewController (controller, true);
+            this.PushViewController (controller, true);
         }
 
         private void OnDescriptionFieldEditingChanged (object sender, EventArgs e)
@@ -317,7 +317,7 @@ namespace Toggl.Ross.ViewControllers
         private void OnTagsButtonTouchUpInside (object sender, EventArgs e)
         {
             var controller = new TagSelectionViewController (model);
-            NavigationController.PushViewController (controller, true);
+            this.PushViewController (controller, true);
         }
 
         private void OnBillableSwitchValueChanged (object sender, EventArgs e)
@@ -335,7 +335,7 @@ namespace Toggl.Ross.ViewControllers
                             "EditEntryConfirmDelete".Tr ());
             alert.Clicked += (s, ev) => {
                 if (ev.ButtonIndex == 1) {
-                    NavigationController.PopToRootViewController (true);
+                    this.PopToRootViewController (true);
                     model.Delete ();
                 }
             };

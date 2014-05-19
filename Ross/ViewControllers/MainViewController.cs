@@ -6,16 +6,9 @@ using Toggl.Ross.Theme;
 
 namespace Toggl.Ross.ViewControllers
 {
-    public class MainViewController : UINavigationController
+    public class MainViewController : StackController
     {
         private Subscription<AuthChangedMessage> subscriptionAuthChanged;
-
-        public override void ViewDidLoad ()
-        {
-            base.ViewDidLoad ();
-
-            NavigationBar.Apply (Style.NavigationBar);
-        }
 
         public override void ViewWillAppear (bool animated)
         {

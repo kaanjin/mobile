@@ -54,10 +54,10 @@ namespace Toggl.Ross.ViewControllers
                 cb ();
             } else {
                 // Pop to previous view controller
-                var vc = NavigationController.ViewControllers;
+                var vc = this.GetStackController ().ViewControllers;
                 var i = Array.IndexOf (vc, this) - 1;
                 if (i >= 0) {
-                    NavigationController.PopToViewController (vc [i], true);
+                    this.PopToViewController (vc [i], true);
                 }
             }
         }
@@ -189,7 +189,7 @@ namespace Toggl.Ross.ViewControllers
                         var next = new NewProjectViewController (proj.Workspace, proj.Color) {
                             ProjectCreated = (p) => controller.Finish (project: p),
                         };
-                        controller.NavigationController.PushViewController (next, true);
+                        controller.PushViewController (next, true);
                     } else {
                         controller.Finish (project: wrap.Model);
                     }

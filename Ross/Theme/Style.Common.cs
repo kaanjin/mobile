@@ -11,14 +11,6 @@ namespace Toggl.Ross.Theme
             v.BackgroundColor = Color.LightGray;
         }
 
-        public static void NavigationBar (UINavigationBar v)
-        {
-            var borderImage = v.GetBorderImage ();
-            if (borderImage != null) {
-                borderImage.Hidden = true;
-            }
-        }
-
         public static void NavLabelButton (UIBarButtonItem v)
         {
             v.SetTitleTextAttributes (new UITextAttributes () {
