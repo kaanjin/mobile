@@ -63,12 +63,12 @@ namespace Toggl.Ross.ViewControllers
 
         private void OnCreateButtonTouchUpInside (object sender, EventArgs e)
         {
-            NavigationController.PushViewController (new SignupViewController (), true);
+            this.PushViewController (new SignupViewController (), true);
         }
 
         private void OnPasswordButtonTouchUpInside (object sender, EventArgs e)
         {
-            NavigationController.PushViewController (new LoginViewController (), true);
+            this.PushViewController (new LoginViewController (), true);
         }
 
         private void OnGoogleButtonTouchUpInside (object sender, EventArgs e)
