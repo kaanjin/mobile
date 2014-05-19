@@ -14,6 +14,7 @@ namespace Toggl.Ross.ViewControllers
     {
         private readonly List<UIViewController> viewControllers = new List<UIViewController> ();
         private TransitionContext transitionContext;
+        private UIPercentDrivenInteractiveTransition interactiveTransition;
 
         public StackController ()
         {
@@ -31,11 +32,41 @@ namespace Toggl.Ross.ViewControllers
         public override void LoadView ()
         {
             View = new UIView ();
+
+            UIScreenEdgePanGestureRecognizer panGesture = null;
+            panGesture = new UIScreenEdgePanGestureRecognizer (() => {
+                var progress = panGesture.TranslationInView (View).X / View.Bounds.Width * 1.0;
+                progress = Math.Min (1, Math.Max (0, progress));
+
+                switch (panGesture.State) {
+                case UIGestureRecognizerState.Began:
+                    interactiveTransition = new UIPercentDrivenInteractiveTransition ();
+                    PopViewController (true);
+                    break;
+                case UIGestureRecognizerState.Changed:
+                    // Update the interactive transition's progress
+                    interactiveTransition.UpdateInteractiveTransition ((float)progress);
+                    break;
+                case UIGestureRecognizerState.Ended:
+                case UIGestureRecognizerState.Cancelled:
+                    if (progress > 0.5) {
+                        interactiveTransition.FinishInteractiveTransition ();
+                    } else {
+                        interactiveTransition.CancelInteractiveTransition ();
+                    }
+
+                    interactiveTransition = null;
+                    break;
+                }
+            }) {
+                Edges = UIRectEdge.Left,
+            };
+            View.AddGestureRecognizer (panGesture);
         }
 
         public void SetNavigationBarHidden (bool hidden, bool animated)
         {
-            throw new NotImplementedException ();
+            // TODO
         }
 
         public void SetViewControllers (UIViewController[] controllers, bool animated)
@@ -358,7 +389,8 @@ namespace Toggl.Ross.ViewControllers
         protected virtual UIViewControllerInteractiveTransitioning GetInteractionController (
             UIViewControllerAnimatedTransitioning animationController)
         {
-            // TODO: Return default navigation controller back interaction
+            if (interactiveTransition != null)
+                return new WrapperInteractor (interactiveTransition);
             return null;
         }
 
@@ -377,6 +409,7 @@ namespace Toggl.Ross.ViewControllers
         private class TransitionContext : UIViewControllerContextTransitioning
         {
             private readonly StackController stackController;
+            private UIViewControllerAnimatedTransitioning animationController;
             private bool isInteractive;
             private bool transitionWasCancelled;
 
@@ -387,7 +420,7 @@ namespace Toggl.Ross.ViewControllers
 
             public void StartTransition ()
             {
-                var animationController = stackController.GetAnimationController (UINavigationControllerOperation.Pop, FromController, ToController);
+                animationController = stackController.GetAnimationController (UINavigationControllerOperation.Pop, FromController, ToController);
                 var interactionController = stackController.GetInteractionController (animationController);
                 isInteractive = interactionController != null;
 
@@ -395,7 +428,6 @@ namespace Toggl.Ross.ViewControllers
                     interactionController.StartInteractiveTransition (this);
                 } else {
                     animationController.AnimateTransition (this);
-                    // TODO: Call AnimationEnded callback!
                 }
             }
 
@@ -416,9 +448,12 @@ namespace Toggl.Ross.ViewControllers
 
             public override void CompleteTransition (bool didComplete)
             {
-                var cb = Callback;
-                if (cb != null) {
-                    cb (didComplete);
+                if (Callback != null) {
+                    Callback (didComplete);
+                }
+
+                if (animationController != null) {
+                    animationController.AnimationEnded (didComplete);
                 }
             }
 
@@ -542,9 +577,28 @@ namespace Toggl.Ross.ViewControllers
                 );
             }
 
+            public override void AnimationEnded (bool transitionCompleted)
+            {
+            }
+
             public override double TransitionDuration (IUIViewControllerContextTransitioning transitionContext)
             {
                 return 0.3;
+            }
+        }
+
+        private class WrapperInteractor : UIViewControllerInteractiveTransitioning
+        {
+            private readonly UIPercentDrivenInteractiveTransition transition;
+
+            public WrapperInteractor (UIPercentDrivenInteractiveTransition transition)
+            {
+                this.transition = transition;
+            }
+
+            public override void StartInteractiveTransition (IUIViewControllerContextTransitioning transitionContext)
+            {
+                transition.StartInteractiveTransition (transitionContext);
             }
         }
     }
