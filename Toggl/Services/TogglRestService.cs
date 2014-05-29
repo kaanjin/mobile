@@ -18,12 +18,22 @@ namespace Toggl.Core.Services
             _jsonConverter = Mvx.Resolve<IMvxJsonConverter>();
         }
 
-        public async Task<bool> Signup(string email, string password)
+        public async Task<User> Signup(string email, string password)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            var model = new UserModel {email = email, password = password, timezone = "UTC", at = DateTime.MinValue};
-            var json = _jsonConverter.SerializeObject(model);
-            _restClient.MakeRequestFor<UserModel>(new MvxStringRestRequest("http://toggl.com/somesignup", json), r => tcs.SetResult(true), e => tcs.SetResult(false));         
+            var tcs = new TaskCompletionSource<User>();
+            var model = new UserModel
+            {
+                user = new User
+                {
+                    email = email,
+                    password = password,
+                    timezone = "Europe/Tallinn",
+                    store_start_and_stop_time = true,
+                    created_with = "TogglRoss/7.0.0",
+                    at = DateTime.UtcNow       
+                }
+            };
+            _restClient.MakeRequestFor<Wrapper<User>>(BuildRequestFor(model), r => tcs.SetResult(r.Result.data), e => tcs.SetResult(null));         
             await tcs.Task;
             return tcs.Task.Result;
         }
@@ -31,17 +41,23 @@ namespace Toggl.Core.Services
         public async Task<bool> Signin(string email, string password)
         {
             var tcs = new TaskCompletionSource<bool>();
-            var model = new UserModel { email = email, password = password };
-            var json = _jsonConverter.SerializeObject(model);
-            _restClient.MakeRequestFor<UserModel>(new MvxStringRestRequest("http://toggl.com/somesignin", json), r => tcs.SetResult(true), e => tcs.SetResult(true));
+            //var model = new UserModel { email = email, password = password };
+            //_restClient.MakeRequestFor<UserModel>(BuildRequestFor(null), r => tcs.SetResult(true), e => tcs.SetResult(true));
             await tcs.Task;
             return tcs.Task.Result;
+        }
+
+        private MvxRestRequest BuildRequestFor<T>(T model)
+        {
+            var json = _jsonConverter.SerializeObject(model);
+            var request = new MvxStringRestRequest("https://toggl.com/api/v8/signups", json);
+            return request;
         }
     }
 
     public interface ITogglRestService
     {
-        Task<bool> Signup(string email, string password);
+        Task<User> Signup(string email, string password);
         Task<bool> Signin(string email, string password);
     }
 }

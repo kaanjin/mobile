@@ -61,7 +61,7 @@ namespace Toggl.Core.ViewModels
                         IsSigningin = false;
 
                         if (waiter.GetResult())
-                            ShowViewModel<LogViewModel>();
+                            base.ShowViewModel<LogViewModel>();
                     });
                 });
             }

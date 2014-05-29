@@ -7,9 +7,11 @@ namespace Toggl.Core.ViewModels
     public class SignupViewModel : MvxViewModel
     {
         private readonly ITogglRestService _togglRestService;
+        private readonly ILocalStorageService _localStorageService;
 
-        public SignupViewModel(ITogglRestService togglRestService)
+        public SignupViewModel(ILocalStorageService localStorageService, ITogglRestService togglRestService)
         {
+            _localStorageService = localStorageService;
             _togglRestService = togglRestService;
         }
 
@@ -60,8 +62,13 @@ namespace Toggl.Core.ViewModels
                     {
                         IsSigningup = false;
 
-                        if (waiter.GetResult())
+                        var user = waiter.GetResult();
+
+                        if (user != null)
+                        {
+                            _localStorageService.Set("auth_token", user.api_token);
                             ShowViewModel<LogViewModel>();
+                        }
                     });
                 });
             }
